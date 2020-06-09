@@ -21,25 +21,39 @@ export default class DataPoint extends React.Component {
 
   processValue() {
     const { stat, value } = this.props;
+    //console.log("Processing value: ",JSON.stringify(stat),JSON.stringify(value))
     if (value === null || value === 'N/A') {
       return 'N/A';
     }
     let workingVal = value;
     if (stat.type === 'percentile') {
+      //console.log("Percentile Keys:",stat.label,Object.keys(value))
       const percentileKeys = Object.keys(value);
-      workingVal = value[percentileKeys[0]].toFixed(2);
+      //console.log("Percentile value:",value[percentileKeys[0]])
+      if (value[percentileKeys[0]] === null){
+        workingVal = 'N/A'
+      }
+      else {
+        workingVal = value[percentileKeys[0]].toFixed(2);
+      }
+     // console.log("Returning: ",workingVal)
     }
     if (stat.type === 'decimal') {
       workingVal = workingVal.toFixed(2);
+      //console.log("Returning: ",workingVal)
     }
     switch (stat.value.display) {
       case 'percentage':
+       // console.log("Returning: ",workingVal)
         return `${workingVal}`;
       case 'seconds':
+        //console.log("Returning: ",workingVal)
         return `${workingVal} s`;
       case 'integer':
+        //console.log("Returning: ",workingVal.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ','))
         return workingVal.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
       default:
+        //console.log("Returning: ",workingVal)
         return workingVal;
     }
   }
