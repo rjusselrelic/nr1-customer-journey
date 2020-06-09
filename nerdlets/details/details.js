@@ -35,6 +35,7 @@ export default class Details extends React.Component {
     const step = journey.steps.find(s => s.id === selectedStep);
     let { stats, kpis } = journey;
     // debugger;
+    //console.log(sinceStatement)
     stats = stats.filter(s => {
       return s.value.nrql;
     });
@@ -43,7 +44,7 @@ export default class Details extends React.Component {
         .filter(kpi => stats.find(s => s.ref === kpi.ref))
         .map(kpi => {
           kpi.stat = stats.find(s => s.ref === kpi.ref);
-          kpi.nrql = `${kpi.stat.value.nrql} AND (${column.nrqlWhere}) AND (${
+          kpi.nrql = `${kpi.stat.value.nrql} WHERE (${column.nrqlWhere}) AND (${
             step.nrqlWhere
           }) ${
             kpi.altNrql ? `AND (${kpi.altNrql}) ` : ''
@@ -95,9 +96,9 @@ export default class Details extends React.Component {
           {stats.map((stat, i) => {
             let query = null;
             if (stat.value.nrql.includes('JavaScriptError')) {
-              query = `${stat.value.nrql} AND (${step.altNrql.JavaScriptError}) AND (${column.nrqlWhere}) TIMESERIES ${sinceStatement} COMPARE WITH ${agoStatement}`;
+              query = `${stat.value.nrql}  WHERE (${column.nrqlWhere}) TIMESERIES ${sinceStatement} COMPARE WITH ${agoStatement}`;
             } else {
-              query = `${stat.value.nrql} AND (${step.nrqlWhere}) AND (${column.nrqlWhere}) TIMESERIES ${sinceStatement} COMPARE WITH ${agoStatement}`;
+              query = `${stat.value.nrql} WHERE (${step.nrqlWhere}) AND (${column.nrqlWhere}) TIMESERIES ${sinceStatement} COMPARE WITH ${agoStatement}`;
             }
             // console.log(query);
             return (
