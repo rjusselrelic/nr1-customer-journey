@@ -93,15 +93,17 @@ export default class StatCell extends React.Component {
                   if (stat.value.nrql) {
                     if (requiresAltNrql) {
                       if (altStepNrql && altColumnNrql) {
-                        return `${stat.ref}:nrql(query: "${stat.value.nrql} AND (${altColumnNrql}) AND (${altStepNrql}) ${sinceStmt}") {
+                        return `${stat.ref}:nrql(query: "${stat.value.nrql} WHERE(${altColumnNrql}) AND (${altStepNrql}) ${sinceStmt}") {
                   results
                 }`;
                       } else {
                         // we failed to provide the needed altNrql, so the result is incalculable.
+                        //console.error("Failed to provide the needed altNrql, so the result is incalculable")  
+                        
                         return '';
                       }
                     } else {
-                      return `${stat.ref}:nrql(query: "${stat.value.nrql} AND (${column.nrqlWhere}) AND (${step.nrqlWhere}) ${sinceStmt}") {
+                      return `${stat.ref}:nrql(query: "${stat.value.nrql} WHERE(${column.nrqlWhere}) AND (${step.nrqlWhere}) ${sinceStmt}") {
                   results
               }`;
                     }
@@ -113,6 +115,7 @@ export default class StatCell extends React.Component {
             }
           }
         }`;
+        //console.log(q);
     return (
       <div
         className="standardStatCell"
@@ -122,7 +125,7 @@ export default class StatCell extends React.Component {
         <h5 className="pageTitle">{step.label}</h5>
         <NerdGraphQuery query={q}>
           {({ loading, data, error }) => {
-            // console.debug([loading, error, data, kpis]); //eslint-disable-line
+             //console.debug([loading, error, data, kpis]); //eslint-disable-line
             if (loading) {
               return (
                 <div className="skeletonContainer">
