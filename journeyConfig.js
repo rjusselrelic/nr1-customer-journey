@@ -56,6 +56,11 @@ const journeyConfig = [
         id: 4,
         label: 'Australia',
         nrqlWhere: "appName LIKE 'EchoSign-prod-au%-%'"
+      },
+      {
+        id: 5,
+        label: 'Japan',
+        nrqlWhere: "appName LIKE 'EchoSign-prod-jp%-%'"
       }
 
     ],
@@ -66,7 +71,8 @@ const journeyConfig = [
         nrqlWhere:
           "pageUrl like '%'",
         altNrql: {
-          JavaScriptError: " requestUri like '%' "
+          JavaScriptError: " requestUri like '%' ",
+          TransactionError:" name like '%' "
         }
       },
       {
@@ -202,26 +208,61 @@ const journeyConfig = [
         id: 0,
         label: 'All Shards',
         nrqlWhere: "appName like 'EchoSign-stage%'",
+        altNrql: {
+          Transaction: " appName like 'EchoSign-stage%'",
+          JavaScriptError: " appName like 'EchoSign-stage%' ",
+          TransactionError:" appName like 'EchoSign-stage%' "
+        }
       },
       {
         id: 1,
         label: 'N. America (*-na#-dc#)',
-        nrqlWhere: "appName LIKE 'EchoSign-stage-na%-%'"
+        nrqlWhere: "appName LIKE 'EchoSign-stage-na%-%'",
+        altNrql: {
+          Transaction: " appName like 'EchoSign-stage-na%'",
+          JavaScriptError: " appName like 'EchoSign-stage-na%' ",
+          TransactionError:" appName like 'EchoSign-stage-na%' "
+        }
       },
       {
         id: 2,
         label: 'Europe (*-eu#-dc#)',
-        nrqlWhere: "appName LIKE 'EchoSign-stage-eu%-%'"
+        nrqlWhere: "appName LIKE 'EchoSign-stage-eu%-%'",
+        altNrql: {
+          Transaction: " appName like 'EchoSign-stage-eu%'",
+          JavaScriptError: " appName like 'EchoSign-stage-eu%' ",
+          TransactionError:" appName like 'EchoSign-stage-eu%' "
+        }
       },
       {
         id: 3,
         label: 'India (*-in#-dc#)',
-        nrqlWhere: "appName LIKE 'EchoSign-stage-in%-%'"
+        nrqlWhere: "appName LIKE 'EchoSign-stage-in%-%'",
+        altNrql: {
+          Transaction: " appName like 'EchoSign-stage-in%'",
+          JavaScriptError: " appName like 'EchoSign-stage-in%' ",
+          TransactionError:" appName like 'EchoSign-stage-in%' "
+        }
       },
       {
         id: 4,
         label: 'Australia (*-au#-dc#)',
-        nrqlWhere: "appName LIKE 'EchoSign-stage-au%-%'"
+        nrqlWhere: "appName LIKE 'EchoSign-stage-au%-%'",
+        altNrql: {
+          Transaction: " appName like 'EchoSign-stage-au%'",
+          JavaScriptError: " appName like 'EchoSign-stage-au%' ",
+          TransactionError:" appName like 'EchoSign-stage-au%' "
+        }
+      },
+      {
+        id: 5,
+        label: 'Japan (*-jp#-dc#)',
+        nrqlWhere: "appName LIKE 'EchoSign-stage-jp%-%'",
+        altNrql: {
+          Transaction: " appName like 'EchoSign-stage-jp%'",
+          JavaScriptError: " appName like 'EchoSign-stage-jp%' ",
+          TransactionError:" appName like 'EchoSign-stage-jp%' "
+        }
       }
 
     ],
@@ -229,29 +270,53 @@ const journeyConfig = [
       {
         id: 0,
         label: 'Home',
-        nrqlWhere:
-          "pageUrl like '%'"
+        nrqlWhere: "pageUrl like '%'",
+        altNrql: {
+          Transaction: " name like '%'",
+          JavaScriptError: " requestUri like '%' ",
+          TransactionError:" transactionUiName like '%' "
+        }
+          
       },
       {
         id: 1,
         label: 'Login',
-        nrqlWhere:
-          "pageUrl like '%login%'"
+        nrqlWhere: "pageUrl like '%login%'",
+        altNrql: {
+          Transaction: "name like '%login%'",
+          JavaScriptError: " requestUri like '%login%' ",
+          TransactionError:" transactionUiName like '%login%' "
+        }
       },
       {
         id: 2,
         label: 'Compose',
-        nrqlWhere: "pageUrl like '%compose%'"
+        nrqlWhere: "pageUrl like '%compose%'",
+        altNrql: {
+          Transaction: "name like '%compose%'",
+          JavaScriptError: " requestUri like '%compose%' ",
+          TransactionError:" transactionUiName like '%compose%' "
+        }
       },
       {
         id: 3,
         label: 'Sign (Agreement)',
         nrqlWhere: "pageUrl like '%agreements%'",
+        altNrql: {
+          Transaction: "name like '%agreement%'",
+          JavaScriptError: " requestUri like '%agreement%' ",
+          TransactionError:" transactionUiName like '%agreement%' "
+        }
       },
       {
         id: 4,
         label: 'Send (Agreement)',
         nrqlWhere: "pageUrl like '%send%'",
+        altNrql: {
+          Transaction: "name like '%send%'  ",
+          JavaScriptError: " requestUri like '%send%' ",
+          TransactionError:" transactionUiName like '%send%' "
+        }
       }
     ],
     stats: [
@@ -279,9 +344,19 @@ const journeyConfig = [
         ref: 'errorCount',
         type: 'integer',
         value: {
-          eventName: 'JavaScriptError',
+          eventName: 'TransactionError',
           nrql:
-            "SELECT count(*) FROM JavaScriptError ",
+            "SELECT count(*) FROM TransactionError",
+          display: 'integer'
+        }
+      },
+      {
+        label: 'Transactions',
+        ref: 'transactions',
+        type: 'integer',
+        value: {
+          eventName: 'Transaction',
+          nrql: "SELECT count(*) FROM Transaction where transactionType = 'Web'",
           display: 'integer'
         }
       },
@@ -290,7 +365,7 @@ const journeyConfig = [
         ref: 'errorRate',
         type: 'decimal',
         value: {
-          calculation: { rate: ['errorCount', 'clickCount'] },
+          calculation: { rate: ['errorCount', 'transactions'] },
           display: 'percentage'
         }
       },

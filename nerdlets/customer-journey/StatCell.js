@@ -93,12 +93,15 @@ export default class StatCell extends React.Component {
                   if (stat.value.nrql) {
                     if (requiresAltNrql) {
                       if (altStepNrql && altColumnNrql) {
+                        //console.log("Using altnrql: ",altStepNrql, altColumnNrql)
                         return `${stat.ref}:nrql(query: "${stat.value.nrql} WHERE(${altColumnNrql}) AND (${altStepNrql}) ${sinceStmt}") {
                   results
                 }`;
                       } else {
                         // we failed to provide the needed altNrql, so the result is incalculable.
-                        //console.error("Failed to provide the needed altNrql, so the result is incalculable")  
+                        console.error("Failed to provide the needed altNrql, so the result is incalculable")  
+                        console.log(stat.value.nrql, requiresAltNrql, altStepNrql,altColumnNrql)
+
                         
                         return '';
                       }
