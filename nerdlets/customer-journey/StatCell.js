@@ -68,9 +68,12 @@ export default class StatCell extends React.Component {
             account(id: ${config.accountId}) {
               ${stats
                 .map(stat => {
+                  console.log("Stat EventName: ",stat.label)
                   const requiresAltNrql =
                     stat.value.eventName &&
                     stat.value.eventName !== config.funnel.event;
+
+                    console.log("Step AltNrql: ",step)
 
                   const altStepNrql =
                     requiresAltNrql &&
@@ -80,6 +83,8 @@ export default class StatCell extends React.Component {
                     )
                       ? step.altNrql[stat.value.eventName]
                       : null;
+                  
+                  console.log("Column AltNrql: ",column)
 
                   const altColumnNrql =
                     requiresAltNrql &&
@@ -92,15 +97,15 @@ export default class StatCell extends React.Component {
 
                   if (stat.value.nrql) {
                     if (requiresAltNrql) {
-                      if (altStepNrql && altColumnNrql) {
+                      if (altStepNrql ) {
                         //console.log("Using altnrql: ",altStepNrql, altColumnNrql)
-                        return `${stat.ref}:nrql(query: "${stat.value.nrql} WHERE(${altColumnNrql}) AND (${altStepNrql}) ${sinceStmt}") {
+                        return `${stat.ref}:nrql(query: "${stat.value.nrql} WHERE(${column.nrqlWhere}) AND (${altStepNrql}) ${sinceStmt}") {
                   results
                 }`;
                       } else {
                         // we failed to provide the needed altNrql, so the result is incalculable.
                         console.error("Failed to provide the needed altNrql, so the result is incalculable")  
-                        console.log(stat.value.nrql, requiresAltNrql, altStepNrql,altColumnNrql)
+                        console.log(stat.label, stat.value.nrql, requiresAltNrql, step.label, altStepNrql,column.label,altColumnNrql)
 
                         
                         return '';

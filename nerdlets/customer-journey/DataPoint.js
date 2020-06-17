@@ -19,6 +19,26 @@ export default class DataPoint extends React.Component {
     kpi: PropTypes.object
   };
 
+ nFormatter(num, digits) {
+   //simple number formatter from https://stackoverflow.com/questions/9461621/format-a-number-as-2-5k-if-a-thousand-or-more-otherwise-900/9462382#9462382
+    var si = [
+      { value: 1, symbol: "" },
+      { value: 1E3, symbol: "k" },
+      { value: 1E6, symbol: "M" },
+      { value: 1E9, symbol: "B" },
+      { value: 1E12, symbol: "T" },
+      { value: 1E15, symbol: "Q" }
+    ];
+    var rx = /\.0+$|(\.[0-9]*[1-9])0+$/;
+    var i;
+    for (i = si.length - 1; i > 0; i--) {
+      if (num >= si[i].value) {
+        break;
+      }
+    }
+    return (num / si[i].value).toFixed(digits).replace(rx, "$1") + si[i].symbol;
+  }
+
   processValue() {
     const { stat, value } = this.props;
     //console.log("Processing value: ",JSON.stringify(stat),JSON.stringify(value))
@@ -51,7 +71,8 @@ export default class DataPoint extends React.Component {
         return `${workingVal} s`;
       case 'integer':
         //console.log("Returning: ",workingVal.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ','))
-        return workingVal.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        //return workingVal.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        return this.nFormatter(workingVal,1);
       default:
         //console.log("Returning: ",workingVal)
         return workingVal;

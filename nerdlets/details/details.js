@@ -33,10 +33,12 @@ export default class Details extends React.Component {
     const journey = journeyConfig.find(j => j.id === selectedJourney);
     const column = journey.series.find(s => s.id === selectedColumn);
     const step = journey.steps.find(s => s.id === selectedStep);
+    const eventType = journey.funnel.event;
     let { stats, kpis } = journey;
     // debugger;
     //console.log(sinceStatement)
     stats = stats.filter(s => {
+      //console.log("Detail Stats: ",s.label, s.value.nrql)
       return s.value.nrql;
     });
     if (kpis) {
@@ -49,6 +51,7 @@ export default class Details extends React.Component {
           }) ${
             kpi.altNrql ? `AND (${kpi.altNrql}) ` : ''
           } ${sinceStatement} COMPARE WITH ${agoStatement}`;
+          console.log("KPI NRQL: ",step.label,kpi.nrql)
           return kpi;
         });
     }
@@ -73,6 +76,7 @@ export default class Details extends React.Component {
           )}
           {kpis &&
             kpis.map((kpi, i) => {
+              //console.log(kpi.nrql)
               return (
                 <GridItem key={i} columnSpan={4} className="chartContainer">
                   <HeadingText type="heading-3">{kpi.label}</HeadingText>
@@ -95,8 +99,13 @@ export default class Details extends React.Component {
           </GridItem>
           {stats.map((stat, i) => {
             let query = null;
-            if (stat.value.nrql.includes('JavaScriptError')) {
-              query = `${stat.value.nrql}  WHERE (${column.nrqlWhere}) TIMESERIES ${sinceStatement} COMPARE WITH ${agoStatement}`;
+            //if (stat.value.nrql.includes('JavaScriptError')) {
+            //  query = `${stat.value.nrql} AND (${step.altNrql.JavaScriptError}) AND (${column.nrqlWhere}) TIMESERIES ${sinceStatement} COMPARE WITH ${agoStatement}`;
+            //} else {
+            //  query = `${stat.value.nrql} AND (${step.nrqlWhere}) AND (${column.nrqlWhere}) TIMESERIES ${sinceStatement} COMPARE WITH ${agoStatement}`;
+            //}
+            if (!stat.value.nrql.includes(eventType)) {
+              query = `${stat.value.nrql}  WHERE (`+step.altNrql[stat.value.eventName]+`AND  ${column.nrqlWhere}) TIMESERIES ${sinceStatement} COMPARE WITH ${agoStatement}`;
             } else {
               query = `${stat.value.nrql} WHERE (${step.nrqlWhere}) AND (${column.nrqlWhere}) TIMESERIES ${sinceStatement} COMPARE WITH ${agoStatement}`;
             }
